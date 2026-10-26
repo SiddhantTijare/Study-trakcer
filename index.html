@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Streak</title>
+<style>
+:root{--bg:#f3f6f1;--card:#fff;--ink:#14231a;--mute:#5d6f63;--line:#d9e2da;--accent:#1f7a45;--l0:#e3e9e4;--l1:#bfe3c8;--l2:#78c58e;--l3:#2f9d56;--l4:#116b36;--warn:#b4531a;
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1612;--card:#16221b;--ink:#e6f0e8;--mute:#93a799;--line:#27382d;--accent:#4fd37f;--l0:#222f27;--l1:#1d4a30;--l2:#23773f;--l3:#34a95b;--l4:#6ae39a;--warn:#e08a4f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1612;--card:#16221b;--ink:#e6f0e8;--mute:#93a799;--line:#27382d;--accent:#4fd37f;--l0:#222f27;--l1:#1d4a30;--l2:#23773f;--l3:#34a95b;--l4:#6ae39a;--warn:#e08a4f;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;line-height:1.45}
+main{max-width:980px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:2rem;margin:0;letter-spacing:-.5px}
+h2{font-size:1.05rem;margin:0 0 10px}
+.sub{color:var(--mute);margin:2px 0 0;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-size:1.6rem;font-family:Georgia,serif;color:var(--accent)}
+.stat span{color:var(--mute);font-size:.85rem}
+.heat-wrap{overflow-x:auto;padding-bottom:6px}
+.months{display:grid;grid-auto-flow:column;grid-auto-columns:15px;gap:3px;margin-left:26px;height:16px;font-size:.72rem;color:var(--mute)}
+.months span{white-space:nowrap}
+.hm{display:flex;gap:6px}
+.dows{display:grid;grid-template-rows:repeat(7,15px);gap:3px;font-size:.68rem;color:var(--mute);width:20px}
+.grid{display:grid;grid-template-rows:repeat(7,15px);grid-auto-flow:column;grid-auto-columns:15px;gap:3px}
+.cell{width:15px;height:15px;border-radius:3px;background:var(--l0);border:0;padding:0;cursor:pointer}
+.cell.l1{background:var(--l1)}.cell.l2{background:var(--l2)}.cell.l3{background:var(--l3)}.cell.l4{background:var(--l4)}
+.cell.future{visibility:hidden}
+.cell.today{outline:2px solid var(--ink);outline-offset:1px}
+.cell.sel{outline:2px solid var(--accent);outline-offset:1px}
+.cell:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.legend{display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:.75rem;color:var(--mute);margin-top:8px}
+.legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+label{display:flex;flex-direction:column;font-size:.8rem;color:var(--mute);gap:3px}
+input{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:110px}
+input[type=date]{width:150px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+:root[data-theme="dark"] button.primary{color:#04210f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary{color:#04210f}}
+.msg{min-height:1.3em;margin:8px 0 0;font-size:.9rem;color:var(--accent)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:720px){.two{grid-template-columns:1fr}}
+.bar{height:12px;border-radius:99px;background:var(--l0);overflow:hidden}
+.bar div{height:100%;background:var(--l3);width:0;transition:width .4s}
+.week{display:flex;align-items:flex-end;gap:8px;height:120px}
+.week div{flex:1;text-align:center;font-size:.72rem;color:var(--mute);display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.week i{display:block;background:var(--l3);border-radius:4px 4px 0 0;min-height:3px}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.badge{border:1px dashed var(--line);border-radius:10px;padding:8px 10px;font-size:.85rem;color:var(--mute)}
+.badge.on{border:1px solid var(--accent);color:var(--ink);background:var(--l0)}
+.badge b{display:block}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+li button{padding:3px 9px;font-size:.8rem}
+.tiny{font-size:.8rem;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.auth{max-width:380px;margin:12vh auto 0}.auth input{width:100%}.auth .row{margin-top:10px}[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<section class="card auth" id="auth" hidden>
+ <h1>Study Streak</h1><p class="sub">Sign in to see your hours on any device.</p>
+ <label style="margin-top:12px">Email<input type="email" id="email" autocomplete="username"></label>
+ <label style="margin-top:8px">Password (6+ characters)<input type="password" id="pw" autocomplete="current-password"></label>
+ <div class="row"><button class="primary" id="signin" type="button">Sign in</button><button id="signup" type="button">Create account</button></div>
+ <p class="msg" id="amsg" role="status"></p>
+</section>
+<main id="app" hidden>
+<header>
+ <div><h1>Study Streak</h1><p class="sub" id="tag">Log your hours. Earn 10 points for every hour.</p></div>
+ <div class="row"><button id="theme" type="button">Toggle theme</button><button id="out" type="button">Sign out</button></div>
+</header>
+
+<section class="card" aria-label="Study calendar">
+ <h2 id="heatTitle">Your year of studying</h2>
+ <div class="heat-wrap"><div class="months" id="months"></div>
+ <div class="hm"><div class="dows"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div><div class="grid" id="grid"></div></div></div>
+ <div class="legend">Less <i style="background:var(--l0)"></i><i style="background:var(--l1)"></i><i style="background:var(--l2)"></i><i style="background:var(--l3)"></i><i style="background:var(--l4)"></i> More</div>
+ <p class="tiny">Shades: under 1 h, 1–2 h, 2–4 h, 4 h and up. Click any day to log or fix it.</p>
+</section>
+
+<section class="stats" id="stats"></section>
+
+<div class="two">
+ <section class="card">
+  <h2>Log study time</h2>
+  <div class="row">
+   <label>Date<input type="date" id="date"></label>
+   <label>Hours<input type="number" id="h" min="0" max="24" step="1" value="1"></label>
+   <label>Minutes<input type="number" id="m" min="0" max="59" step="5" value="0"></label>
+  </div>
+  <div class="row" style="margin-top:10px">
+   <button class="primary" id="add" type="button">Add time</button>
+   <button id="set" type="button">Set day total</button>
+  </div>
+  <p class="msg" id="msg" role="status"></p>
+  <p class="tiny">Add time puts it on top of what that day already has. Set day total replaces it.</p>
+ </section>
+ <section class="card">
+  <h2>Today's goal</h2>
+  <div class="row" style="align-items:center"><label>Daily goal (hours)<input type="number" id="goal" min="0.5" max="16" step="0.5"></label></div>
+  <p id="goalTxt" style="margin:10px 0 6px"></p>
+  <div class="bar"><div id="goalBar"></div></div>
+  <h2 style="margin-top:16px">Level</h2>
+  <p id="lvlTxt" style="margin:0 0 6px"></p>
+  <div class="bar"><div id="lvlBar"></div></div>
+ </section>
+</div>
+
+<div class="two">
+ <section class="card"><h2>Last 7 days</h2><div class="week" id="week"></div></section>
+ <section class="card"><h2>Recent days</h2><ul id="recent"></ul></section>
+</div>
+
+<section class="card"><h2>Badges</h2><div class="badges" id="badges"></div></section>
+
+<section class="card">
+ <div class="row"><button id="export" type="button">Copy backup</button><button id="reset" type="button">Reset all data</button></div>
+ <p class="tiny">Your data is saved to your account and syncs across your devices.</p>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+var KEY="studyStreak.v1", S={entries:{},goal:2}, sel=null;
+var $=function(id){return document.getElementById(id)};
+var SB_URL="PASTE_YOUR_PROJECT_URL_HERE",SB_KEY="PASTE_YOUR_ANON_PUBLIC_KEY_HERE",sb=null,uid=null;
+function fail(e){say("Save failed: "+(e&&e.message?e.message:"check your connection."))}
+async function dbSet(k,v){try{var r=v>0?await sb.from("entries").upsert({user_id:uid,day:k,hours:v}):await sb.from("entries").delete().eq("user_id",uid).eq("day",k);if(r.error)fail(r.error)}catch(e){fail(e)}}
+async function dbGoal(){try{var r=await sb.from("settings").upsert({user_id:uid,goal:S.goal});if(r.error)fail(r.error)}catch(e){fail(e)}}
+async function loadAll(){S={entries:{},goal:2};var from=0;
+ while(true){var a=await sb.from("entries").select("day,hours").range(from,from+999);if(a.error)throw a.error;a.data.forEach(function(r){S.entries[r.day]=+r.hours});if(a.data.length<1000)break;from+=1000}
+ var g=await sb.from("settings").select("goal").maybeSingle();if(g.data&&g.data.goal)S.goal=+g.data.goal}
+function showAuth(m){$("auth").hidden=false;$("app").hidden=true;$("amsg").textContent=m||""}
+async function enter(session){uid=session.user.id;$("auth").hidden=true;$("app").hidden=false;
+ try{await loadAll()}catch(e){say("Couldn't load your data: "+e.message)}
+ render();var hm=document.querySelector(".heat-wrap");hm.scrollLeft=hm.scrollWidth}
+async function boot(){
+ if(SB_URL.indexOf("PASTE")===0||!window.supabase){showAuth("Setup needed: add your Supabase URL and key at the top of the script.");return}
+ sb=window.supabase.createClient(SB_URL,SB_KEY);
+ var s=await sb.auth.getSession();if(s.data&&s.data.session)enter(s.data.session);else showAuth()}
+async function auth(up){
+ if(!sb){return}var email=$("email").value.trim(),pw=$("pw").value;
+ if(!email||pw.length<6){$("amsg").textContent="Enter your email and a password of 6+ characters.";return}
+ $("amsg").textContent="Please wait...";
+ var r=up?await sb.auth.signUp({email:email,password:pw}):await sb.auth.signInWithPassword({email:email,password:pw});
+ if(r.error){$("amsg").textContent=r.error.message;return}
+ if(r.data.session)enter(r.data.session);else $("amsg").textContent="Account created. Confirm it from the email we sent, then sign in."}
+$("signin").onclick=function(){auth(false)};
+$("signup").onclick=function(){auth(true)};
+$("out").onclick=async function(){if(sb)await sb.auth.signOut();S={entries:{},goal:2};uid=null;$("pw").value="";showAuth()};
+function key(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function parse(k){var p=k.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function hrs(k){return S.entries[k]||0}
+function fmt(h){var m=Math.round(h*60);var a=Math.floor(m/60),b=m%60;return a?(a+"h"+(b?" "+b+"m":"")):(b+"m")}
+function pts(h){return Math.round(h*10)}
+function lvl(h){return h<=0?0:h<1?1:h<2?2:h<4?3:4}
+var today=new Date();today.setHours(0,0,0,0);var tk=key(today);sel=tk;
+
+function streaks(){
+ var cur=0,d=new Date(today);if(!hrs(key(d)))d.setDate(d.getDate()-1);
+ while(hrs(key(d))>0){cur++;d.setDate(d.getDate()-1)}
+ var keys=Object.keys(S.entries).filter(function(k){return S.entries[k]>0}).sort(),best=0,run=0,prev=null;
+ keys.forEach(function(k){var dt=parse(k);if(prev&&Math.round((dt-prev)/864e5)===1)run++;else run=1;if(run>best)best=run;prev=dt});
+ return{cur:cur,best:best,days:keys.length}
+}
+
+function drawHeat(){
+ var g=$("grid"),mo=$("months");g.innerHTML="";mo.innerHTML="";
+ var start=new Date(today);start.setDate(start.getDate()-today.getDay()-52*7);
+ var names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],lastM=-1;
+ for(var w=0;w<53;w++){
+  var wk=new Date(start);wk.setDate(start.getDate()+w*7);
+  var s=document.createElement("span");
+  if(wk.getMonth()!==lastM&&wk.getDate()<=7){s.textContent=names[wk.getMonth()];lastM=wk.getMonth()}
+  mo.appendChild(s);
+  for(var d=0;d<7;d++){
+   var dt=new Date(start);dt.setDate(start.getDate()+w*7+d);
+   var k=key(dt),h=hrs(k),b=document.createElement("button");
+   b.type="button";b.className="cell l"+lvl(h);
+   if(dt>today)b.className+=" future";
+   if(k===tk)b.className+=" today";
+   if(k===sel)b.className+=" sel";
+   b.title=dt.toDateString()+": "+(h?fmt(h)+" ("+pts(h)+" pts)":"no study logged");
+   b.setAttribute("aria-label",b.title);
+   b.dataset.k=k;g.appendChild(b)
+  }
+ }
+ var tot=0;Object.keys(S.entries).forEach(function(k){if(parse(k)>=start)tot+=S.entries[k]});
+ $("heatTitle").textContent=Math.round(tot*10)/10+" hours studied in the last year";
+}
+
+function badges(tH,st,maxDay){
+ var list=[["First step","Log your first session",tH>0],["3-day streak","Study 3 days in a row",st.best>=3],["Week warrior","7-day streak",st.best>=7],["Unstoppable","30-day streak",st.best>=30],
+ ["Deep focus","4+ hours in one day",maxDay>=4],["10 hour club","10 total hours",tH>=10],["50 hour club","50 total hours",tH>=50],["100 hour club","100 total hours",tH>=100]];
+ $("badges").innerHTML=list.map(function(b){return '<div class="badge'+(b[2]?' on':'')+'"><b>'+(b[2]?'Earned: ':'')+b[0]+'</b>'+b[1]+'</div>'}).join("")
+}
+
+function render(){
+ var tH=0,maxDay=0;Object.keys(S.entries).forEach(function(k){var v=S.entries[k];tH+=v;if(v>maxDay)maxDay=v});
+ var st=streaks(),P=pts(tH),L=Math.floor(P/100)+1,th=hrs(tk);
+ $("stats").innerHTML=[[P,"total points"],[fmt(tH)||"0m","total studied"],[st.cur+" d","current streak"],[st.best+" d","best streak"],[fmt(th),"today ("+pts(th)+" pts)"],[st.days,"days studied"]].map(function(s){return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>'}).join("");
+ var pct=Math.min(100,th/S.goal*100);
+ $("goal").value=S.goal;$("goalBar").style.width=pct+"%";
+ $("goalTxt").textContent=th>=S.goal?"Goal reached. Nice work today.":fmt(th)+" of "+S.goal+"h done, "+fmt(S.goal-th)+" to go.";
+ $("lvlTxt").textContent="Level "+L+" · "+(P%100)+"/100 points to level "+(L+1);
+ $("lvlBar").style.width=(P%100)+"%";
+ // week
+ var wk="";for(var i=6;i>=0;i--){var d=new Date(today);d.setDate(d.getDate()-i);var h=hrs(key(d));wk+='<div><small>'+(h?fmt(h):"")+'</small><i style="height:'+Math.min(100,h/Math.max(S.goal,4)*85)+'px"></i>'+["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()]+'</div>'}
+ $("week").innerHTML=wk;
+ var ks=Object.keys(S.entries).filter(function(k){return S.entries[k]>0}).sort().reverse().slice(0,6);
+ $("recent").innerHTML=ks.length?ks.map(function(k){return '<li><span>'+parse(k).toDateString().slice(4)+' · '+fmt(S.entries[k])+' · '+pts(S.entries[k])+' pts</span><button data-del="'+k+'" type="button">Delete</button></li>'}).join(""):'<li class="tiny">Nothing logged yet. Add your first session.</li>';
+ badges(tH,st,maxDay);drawHeat();
+}
+
+function say(t){$("msg").textContent=t}
+function inputHours(){var h=Math.max(0,Math.min(24,+$("h").value||0)),m=Math.max(0,Math.min(59,+$("m").value||0));return h+m/60}
+function apply(replace){
+ var k=$("date").value;if(!k){say("Pick a date first.");return}
+ if(parse(k)>today){say("You can't log time in the future.");return}
+ var v=inputHours();if(!replace&&v<=0){say("Enter some time to add.");return}
+ var nv=replace?v:Math.min(24,hrs(k)+v);
+ if(nv<=0)delete S.entries[k];else S.entries[k]=Math.round(nv*60)/60;
+ sel=k;dbSet(k,S.entries[k]||0);render();
+ say(replace?"Day total set to "+fmt(nv)+".":"Added "+fmt(v)+". That's +"+pts(v)+" points. Day total: "+fmt(nv)+".")
+}
+$("add").onclick=function(){apply(false)};
+$("set").onclick=function(){apply(true)};
+$("date").max=tk;$("date").value=tk;
+$("date").onchange=function(){sel=$("date").value;drawHeat()};
+$("goal").onchange=function(){S.goal=Math.max(.5,+$("goal").value||2);dbGoal();render()};
+$("grid").onclick=function(e){var k=e.target.dataset&&e.target.dataset.k;if(!k)return;sel=k;$("date").value=k;var h=hrs(k);$("h").value=Math.floor(h);$("m").value=Math.round((h%1)*60);say(parse(k).toDateString()+": "+(h?fmt(h)+" logged. Edit and press Set day total.":"nothing logged. Add time above."));drawHeat()};
+$("recent").onclick=function(e){var k=e.target.dataset&&e.target.dataset.del;if(!k)return;delete S.entries[k];dbSet(k,0);render()};
+$("theme").onclick=function(){var r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=dark?"light":"dark"};
+$("export").onclick=function(){var t=JSON.stringify(S);try{navigator.clipboard.writeText(t).then(function(){say("Backup copied to clipboard.")},function(){say("Couldn't copy. Try again.")})}catch(e){say("Couldn't copy. Try again.")}};
+$("reset").onclick=function(){if(confirm("Delete all study data? This can't be undone.")){S={entries:{},goal:2};sb.from("entries").delete().eq("user_id",uid).then(function(r){if(r.error)fail(r.error)});render();say("All data cleared.")}};
+boot();
+})();
+</script>
+</body>
+</html>
