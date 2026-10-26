@@ -132,7 +132,7 @@ li button{padding:3px 9px;font-size:.8rem}
 (function(){
 var KEY="studyStreak.v1", S={entries:{},goal:2}, sel=null;
 var $=function(id){return document.getElementById(id)};
-var SB_URL="https://pqcgvnnvuazipufuaqwi.supabase.co/rest/v1/",SB_KEY="sb_publishable_xr3I4ZNkyNLPBAeiDwSRJw_28bStddx",sb=null,uid=null;
+var SB_URL="https://pqcgvnnvuazipufuaqwi.supabase.co",SB_KEY="sb_publishable_xr3I4ZNkyNLPBAeiDwSRJw_28bStddx",sb=null,uid=null;
 function fail(e){say("Save failed: "+(e&&e.message?e.message:"check your connection."))}
 async function dbSet(k,v){try{var r=v>0?await sb.from("entries").upsert({user_id:uid,day:k,hours:v}):await sb.from("entries").delete().eq("user_id",uid).eq("day",k);if(r.error)fail(r.error)}catch(e){fail(e)}}
 async function dbGoal(){try{var r=await sb.from("settings").upsert({user_id:uid,goal:S.goal});if(r.error)fail(r.error)}catch(e){fail(e)}}
